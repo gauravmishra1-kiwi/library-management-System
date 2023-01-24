@@ -6,8 +6,8 @@ const User = require("./model/user");
 const Book = require("./model/book");
 
 app.use(express.json())
-// const studentRouter = require("./routers/student");
 
+app.use(require("./router/user_route"));
 app.use(require("./router/book_router"));
 
 const port = process.env.PORT || 8080;
