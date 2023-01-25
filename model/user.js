@@ -1,6 +1,8 @@
 const mongooes= require("mongoose");
 const validator=require("validator");
 const bcrypt=require("bcryptjs")
+const jwt=require("jsonwebtoken")
+const multer=require("multer")
 
 const UserSchema=new mongooes.Schema({
     name : {
@@ -29,6 +31,7 @@ const UserSchema=new mongooes.Schema({
     type:String,
     default:"user"
    },
+   image:String,
    tokens:[{
     token:{
         type:String,
@@ -40,7 +43,6 @@ UserSchema.methods.generateAuthToken=async function(){
     try {
         console.log(this._id);
         const token=jwt.sign({_id:this._id.toString()},"thisismysecaratekeythatstorevalue");
-        console.log();
         this.tokens=this.tokens.concat({token:token});
         await this.save(); 
         console.log(token);
@@ -50,6 +52,20 @@ UserSchema.methods.generateAuthToken=async function(){
     }
 }
 
+UserSchema.statics.findByCredentials=async(email,password)=>{
+    const User=await user.findOne({email})
+    if(!User){
+        throw new Error('Unable to login')
+    }
+    
+    const ismatch = await bcrypt.compare(password, User.password)
+   
+    if(!ismatch){
+        throw new Error('Unable to login')
+    }
+
+    return User
+}
 const user =new mongooes.model("user",UserSchema); 
 module.exports =user;
 
