@@ -2,11 +2,13 @@ const express=require('express');
 const router=new express.Router();
 
 const Book = require("../model/book");
+const auth=require("../middleware/auth")
 
 
 router.post("/add", async (req, res) => {
     try {
         const book = new Book({
+            bookId : req.body.bookId,
             name: req.body.name,
             author: req.body.author,
         })
@@ -57,6 +59,29 @@ router.delete("/books/:id",async(req,res)=>{
         res.send(deleteBooks);
     } catch (error) {
         res.send(error)
+    }
+})
+
+router.post('/books/issue', auth, async(req, res)=>{
+    const bookId = req.body.bookId;
+    try {
+        const book = await Book.findOne({bookId});
+        
+        if(!book){
+            throw new Error('Invalid book id');
+        }
+        
+        if(book.issue){
+            throw new Error('Book is already issued');
+        }
+        console.log(req.user);
+        book.ownerId = req.user._id;
+        book.issue = true;
+        await book.save();
+
+        res.send('Book issued')
+    } catch (error) {
+        res.status(400).send({error : error.message});
     }
 })
 module.exports=router;

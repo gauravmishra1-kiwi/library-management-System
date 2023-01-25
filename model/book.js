@@ -1,21 +1,29 @@
-const { default: mongoose } = require("mongoose");
-const mongooes= require("mongoose");
+const mongoose= require("mongoose");
 const validator=require("validator");
 
-const BookSchema=new mongooes.Schema({
+const BookSchema=new mongoose.Schema({
+    bookId :{
+        type : String,
+        required : true,
+        unique : true
+    },
     name : {
         type:String,
-        required:true,
-        unique:true,
+        required:true
     },
     author : {
         type:String,
-        required:true,
+        required:true
     },
+    ownerId : {
+        type : mongoose.Schema.Types.ObjectId,
+    },
+    issue:{
+        type:Boolean,
+        default:false
+    }
 })
 
 
-const book =new mongooes.model("book",BookSchema); 
+const book =new mongoose.model("book", BookSchema); 
 module.exports =book;
-
-

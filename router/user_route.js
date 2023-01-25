@@ -2,6 +2,7 @@ const express=require('express');
 const router=new express.Router();
 const bcrypt=require("bcryptjs");
 const auth=require("../middleware/auth")
+const multer=require("multer")
 
 const User = require("../model/user");
 
