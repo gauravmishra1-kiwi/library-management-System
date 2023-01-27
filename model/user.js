@@ -29,7 +29,7 @@ const UserSchema=new mongooes.Schema({
        },   
    role:{
     type: String,
-    enum: ['admin', 'sub-admin'],
+    enum: ['admin', 'sub-admin', 'user'],
     default:'user'
    },
    image:String,
