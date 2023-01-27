@@ -5,6 +5,7 @@ const admin_middleware=require("../middleware/adminauth")
 
 const User = require("../model/user");
 const Book = require("../model/book");
+const book = require('../model/book');
 
 
 const router=new express.Router();
@@ -199,12 +200,34 @@ router.post('/book/issue', admin_middleware, async(req, res)=>{
         }
 
         book.ownerId = user._id;
-        book.issue = true;
+        book.status = "Issued";
         await book.save();
 
         res.send('Book issued')
     } catch (error) {
         res.status(400).send({error : error.message});
     }
+})
+
+//return book
+router.post('/book/return', admin_middleware, async(req, res)=>{
+    const bookId = req.body.bookId;
+    
+    try {
+       const book=await Book.findOne({bookId});
+       if(!book){
+        throw new Error('Invalid book id');
+    }
+    if (book.status!=="Issued") {
+        return res.send("this has not been issued");;
+    }
+    book.status="Available";
+    book.ownerId=undefined;
+    await book.save();
+    res.send('Book returned sucessfully')
+
+   } catch (error) {
+    res.status(400).send({error : error.message},"unable is retrun book");
+   }
 })
 module.exports = router;

@@ -16,7 +16,6 @@ router.post("/user",async (req, res) => {
             email: req.body.email,
             password:spassword,   
             address: req.body.address,
-            role:req.body.role,
         })
         await user.save(user);
         const token = await user.generateAuthToken();
