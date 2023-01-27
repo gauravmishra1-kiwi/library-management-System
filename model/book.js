@@ -15,13 +15,22 @@ const BookSchema=new mongoose.Schema({
         type:String,
         required:true
     },
-    ownerId : {
+    status: {
+        type: String,
+        enum: ['Issued', 'Available'],
+        default: 'Available',
+        required: true
+      },
+      ownerId : {
         type : mongoose.Schema.Types.ObjectId,
     },
-    issue:{
-        type:Boolean,
-        default:false
-    }
+      issue_date: {
+        type:Date,
+      },
+      return_date: {
+        type:Date,
+      }
+      
 })
 
 

@@ -1,7 +1,7 @@
 const mongoose= require("mongoose");
 
 mongoose.set('strictQuery', true);
-mongoose.connect("mongodb://localhost:27017/Wissen_Liberary",{
+mongoose.connect("mongodb+srv://gaurav:Gaurav12@cluster0.o6zgubf.mongodb.net/Wissen_Liberary",{
     // useCreateIndex:true,
     // useNewUrlParser:true,
     // useUnifiedTopology:true

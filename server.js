@@ -8,7 +8,6 @@ const Book = require("./model/book");
 app.use(express.json())
 
 app.use(require("./router/user_route"));
-app.use(require("./router/book_router"));
 app.use(require("./router/admin"));
 app.use(require("./router/suadmin"));
 
