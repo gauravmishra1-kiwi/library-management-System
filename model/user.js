@@ -28,8 +28,9 @@ const UserSchema=new mongooes.Schema({
         required:true
        },   
    role:{
-    type:String,
-    default:"user"
+    type: String,
+    enum: ['admin', 'sub-admin'],
+    default:'user'
    },
    image:String,
    tokens:[{
@@ -37,8 +38,25 @@ const UserSchema=new mongooes.Schema({
         type:String,
     }
    }],
+//    bookinfo:[
+//     {
+//         id_info: {
+//             id:{
+//                 type:mongooes.Schema.Types.ObjectId,
+//                 ref:'activity'
+//             },
+//             issueDate: Date,
+//             returnbook: Date
+//         }
+//     }
+//    ],
+   responsibilitys:{
+    type:Boolean,
+    default:false
+   }
 })
 
+//token for user
 UserSchema.methods.generateAuthToken=async function(){
     try {
         console.log(this._id);
@@ -52,6 +70,32 @@ UserSchema.methods.generateAuthToken=async function(){
     }
 }
 
+//token for admin
+UserSchema.methods.generateAuthTokenadmin=async function(){
+    try {
+        console.log(this._id);
+        const token=jwt.sign({_id:this._id.toString(),role:this.role.toString()},"thisismysecaratekeythatsto");
+        this.tokens=this.tokens.concat({token:token});
+        await this.save(); 
+        console.log(token);
+        return token;
+    } catch (e) {
+        res.send("token genrate error")
+    }
+}
+
+// UserSchema.methods.permission=async function(){
+//     try {
+//         const update="updateuser"
+//         const retrn= "returnuser";
+//         const responsibility=update && retrn;
+//         this.responsibilitys=this.responsibility.concat({responsibility:responsibility});
+//         await this.save();
+//         return responsibility;
+//     } catch (error) {
+//         res.send("you entered a wrong")
+//     }
+// }
 UserSchema.statics.findByCredentials=async(email,password)=>{
     const User=await user.findOne({email})
     if(!User){
