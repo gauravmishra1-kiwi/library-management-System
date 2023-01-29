@@ -24,12 +24,10 @@ const BookSchema=new mongoose.Schema({
       ownerId : {
         type : mongoose.Schema.Types.ObjectId,
     },
-      issue_date: {
-        type:Date,
-      },
-      return_date: {
-        type:Date,
-      }
+    time: {
+      issueDate: Date,
+      returnDate: Date
+    }
       
 })
 

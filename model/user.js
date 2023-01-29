@@ -53,7 +53,11 @@ const UserSchema=new mongooes.Schema({
    responsibilitys:{
     type:Boolean,
     default:false
-   }
+   },
+   status:{
+    type: String,
+    enum: ['active', 'inactive'],
+   },
 })
 
 //token for user
@@ -84,6 +88,19 @@ UserSchema.methods.generateAuthTokenadmin=async function(){
     }
 }
 
+//suadmin token
+UserSchema.methods.generateAuthTokensubadmin=async function(){
+    try {
+        console.log(this._id);
+        const token=jwt.sign({_id:this._id.toString(),role:this.role.toString()},"thisismysecaratekeythat");
+        this.tokens=this.tokens.concat({token:token});
+        await this.save(); 
+        console.log(token);
+        return token;
+    } catch (e) {
+        res.send("token genrate error")
+    }
+}
 // UserSchema.methods.permission=async function(){
 //     try {
 //         const update="updateuser"

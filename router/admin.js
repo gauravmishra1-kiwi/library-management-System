@@ -46,7 +46,27 @@ router.post('/admin/login', async (req, res) => {
         res.status(400).send({message:'Enter the correct credidentials', data:null, status : 400 })
     }
 })
+//subadmin created by admin
+router.post("/subadmin",admin_middleware,async (req, res) => {
 
+    try {
+        const spassword=await bcrypt.hash(req.body.password,12);
+        const user = new User({
+            name: req.body.name,
+            email: req.body.email,
+            password:spassword,   
+            address: req.body.address,
+            role:req.body.role,
+        })
+        await user.save(user);
+        const token = await user.generateAuthToken();
+        return res.status(201).send({ message: 'User register successfully', data: user, token, status: 201 });
+        console.log(req.body);
+    }
+    catch (err) {
+        res.send(err);
+    }
+})
 //check all data of user
 router.get("/admin/get",admin_middleware,async(req,res)=>{
     try {
@@ -195,14 +215,15 @@ router.post('/book/issue', admin_middleware, async(req, res)=>{
         }
         console.log(book);
         
-        if(book.issue){
+        if(book.status=="Issued"){
             throw new Error('Book is already issued');
         }
 
         book.ownerId = user._id;
         book.status = "Issued";
+        book.time.issueDate = new Date;
         await book.save();
-
+        console.log(book);
         res.send('Book issued')
     } catch (error) {
         res.status(400).send({error : error.message});
@@ -229,5 +250,21 @@ router.post('/book/return', admin_middleware, async(req, res)=>{
    } catch (error) {
     res.status(400).send({error : error.message},"unable is retrun book");
    }
+})
+
+//active inactive status for admin
+router.get("/status",admin_middleware, async(req,res)=>{
+    const Status = req.user.status;
+    const subadmin = await User.find({role : 'sub-admin'});
+    console.log(subadmin);
+    if(Status == 'inactive'){
+        
+      req.user.status="active";
+    }
+    else{
+        req.user.status="inactive";
+    }
+    await req.user.save();
+    res.send(`Admin Status changed - ${req.user.status}`);
 })
 module.exports = router;

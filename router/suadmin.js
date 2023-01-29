@@ -6,33 +6,27 @@ const User = require("../model/user");
 
 
 const router=new express.Router();
-router.post("/subadmin",async (req, res) => {
-
-    try {
-        const spassword=await bcrypt.hash(req.body.password,12);
-        const user = new User({
-            name: req.body.name,
-            email: req.body.email,
-            password:spassword,   
-            address: req.body.address,
-            role:req.body.role,
-        })
-        await user.save(user);
-        const token = await user.generateAuthToken();
-        return res.status(201).send({ message: 'User register successfully', data: user, token, status: 201 });
-        console.log(req.body);
-    }
-    catch (err) {
-        res.send(err);
-    }
-})
 
 router.post('/subadmin/login', async (req, res) => {
     try {
         
+        const admin = await User.findOne({role : 'admin'});
+        
         const user = await User.findByCredentials(req.body.email, req.body.password)
         
-        const token = await user.generateAuthToken() 
+        if(!admin){
+            return res.send('Please create a admin first');
+        }
+
+        if(admin.status === 'active'){
+            user.tokens = [];
+            await user.save();
+            return res.send('Admin is active right now. Subadmin cannot login');
+
+        }
+        
+        
+        const token = await user.generateAuthTokensubadmin() 
                   //*********** */
         res.status(200).send({message:'User login successfully', data:user, status : 200 })
     } catch (e) {
