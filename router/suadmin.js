@@ -1,6 +1,6 @@
 const express=require('express');
 const bcrypt=require("bcryptjs");
-const auth=require("../middleware/auth")
+const subadmin_auth=require("../middleware/subadmin_auth")
 
 const User = require("../model/user");
 
@@ -35,7 +35,7 @@ router.post('/subadmin/login', async (req, res) => {
     }
 })
 
-router.patch("/subadmin/:id",auth,async(req,res)=>{
+router.patch("/subadmin/:id",subadmin_auth,async(req,res)=>{
     try {
         const _id =req.params.id;
         const updateuser = await User.findByIdAndUpdate(_id,req.body);

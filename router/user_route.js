@@ -3,11 +3,30 @@ const router=new express.Router();
 const bcrypt=require("bcryptjs");
 const auth=require("../middleware/auth")
 const multer=require("multer")
+const path=require("path");
 
 const User = require("../model/user");
+router.use(express.static('public'));
+
+const storage=multer.diskStorage({
+    destination:function(req,file,cb){
+        cb(null,path.join(__dirname,'../public/userImage'),function(error,success){
+            if (error) throw error
+        });
+    },
+    filename:function(req,file,cb){
+        const name=Date.now()+'_'+file.originalname;
+        cb(null,name,function(error1,success1){
+            if(error1) throw  error1
+        })
+    }
+})
+
+const upload= multer({storage:storage});
 
 
-router.post("/user",async (req, res) => {
+
+router.post("/user",upload.single('image'),async (req, res) => {
 
     try {
         const spassword=await bcrypt.hash(req.body.password,12);
@@ -16,6 +35,7 @@ router.post("/user",async (req, res) => {
             email: req.body.email,
             password:spassword,   
             address: req.body.address,
+            image:req.file.filename
         })
         await user.save(user);
         const token = await user.generateAuthToken();

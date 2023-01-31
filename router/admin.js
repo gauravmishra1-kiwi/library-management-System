@@ -80,7 +80,8 @@ router.get("/admin/get",admin_middleware,async(req,res)=>{
 //check all data of book
 router.get("/admin/get-book",admin_middleware,async(req,res)=>{
     try {
-        const bookData = await Book.find();
+        const {limit=100, skip=0} = req.query;
+        const bookData = await Book.find().limit(limit).skip(skip);
         res.send(bookData);
     } catch (error) {
         res.send(error)
